@@ -1,0 +1,805 @@
+:root {
+    --colore-primario: #ff0000;
+    --colore-testo: #ffffff;
+    --colore-sfondo: #000000;
+    --sfondo-controlli: rgba(0, 0, 0, 0.9);
+    --sfondo-progresso: rgba(255, 255, 255, 0.2);
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: var(--colore-sfondo);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: var(--colore-testo);
+  }
+  
+  .contenitore-video {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    background-color: var(--colore-sfondo);
+    overflow: hidden;
+    border-radius: 0;
+    box-shadow: none;
+    cursor: default;
+  }
+  
+  .contenitore-video video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  
+  .contenitore-anteprima {
+    position: absolute;
+    bottom: 85px;
+    transform: translateX(-40%);
+    width: 180px;
+    height: 101px;
+    background: #000;
+    border-radius: 6px;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  .contenitore-anteprima.visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  
+  .contenitore-anteprima video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .contenitore-anteprima::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4));
+    pointer-events: none;
+  }
+  
+  .tempo-anteprima {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.85);
+    padding: 6px 8px;
+    font-size: 12px;
+    text-align: center;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    backdrop-filter: blur(4px);
+  }
+  
+  .indicatore-caricamento {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  
+  .indicatore-caricamento.visible {
+    opacity: 1;
+  }
+  
+  .spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-left-color: var(--colore-primario);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .stato-rete {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background-color: var(--colore-primario);
+    padding: 8px 12px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 30;
+  }
+  
+  .stato-rete.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .stato-rete svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .sovrapposizione-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+  }
+  
+  .sovrapposizione-play.visible {
+    opacity: 1;
+  }
+  
+  .sovrapposizione-play svg {
+    width: 80px;
+    height: 80px;
+    opacity: 0.8;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  
+  .sovrapposizione-play:hover svg {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  
+  .controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, var(--sfondo-controlli));
+    padding: 16px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1000;
+    pointer-events: auto;
+  }
+  
+  .contenitore-video:hover .controls,
+  .controls.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .progress-container {
+    margin: -10px 0 16px 0;
+    padding: 10px 0;
+    cursor: pointer;
+  }
+  
+  .progress-bar {
+    height: 4px;
+    background-color: var(--sfondo-progresso);
+    border-radius: 2px;
+    position: relative;
+    transition: height 0.2s ease;
+    cursor: pointer;
+  }
+  
+  .progress-container:hover .progress-bar {
+    height: 6px;
+  }
+  
+  .buffer-progress {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    transform-origin: left;
+    will-change: transform;
+  }
+  
+  .progress-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background-color: var(--colore-primario);
+    border-radius: 2px;
+    transform-origin: left;
+    will-change: transform;
+    z-index: 1;
+    pointer-events: none;
+  }
+  
+  .progress-handle {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    background-color: var(--colore-primario);
+    border: 3px solid #fff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    will-change: transform, left;
+    z-index: 2;
+    pointer-events: none;
+  }
+  
+  .progress-container:hover .progress-handle {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  
+  .progress-handle:hover {
+    transform: translate(-50%, -50%) scale(1.2) !important;
+    box-shadow: 0 0 0 8px rgba(255, 0, 0, 0.2);
+  }
+  
+  .controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .left-controls,
+  .right-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .control-button {
+    background: none;
+    border: none;
+    color: var(--colore-testo);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.9;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
+    touch-action: manipulation;
+    z-index: 1001;
+    pointer-events: auto;
+  }
+  
+  .control-button:hover {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  
+  .control-button:active {
+    transform: scale(0.95);
+  }
+  
+  .control-button svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .volume-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .volume-slider-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    padding: 4px 8px;
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    transition: opacity 0.3s ease, width 0.3s ease;
+  }
+  
+  .volume-container:hover .volume-slider-container {
+    opacity: 1;
+    width: 120px;
+  }
+  
+  .volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--sfondo-progresso);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--colore-primario);
+    border: 2px solid #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-top: -6px;
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .volume-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--colore-primario);
+    border: 2px solid #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-top: -6px;
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 8px rgba(255, 0, 0, 0.2);
+  }
+  
+  .volume-slider::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 8px rgba(255, 0, 0, 0.2);
+  }
+  
+  .volume-slider::-webkit-slider-thumb:active {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 12px rgba(255, 0, 0, 0.1);
+  }
+  
+  .volume-slider::-moz-range-thumb:active {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 12px rgba(255, 0, 0, 0.1);
+  }
+  
+  .volume-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(
+      to right,
+      var(--colore-primario) 0%,
+      var(--colore-primario) var(--volume-percentage),
+      var(--sfondo-progresso) var(--volume-percentage),
+      var(--sfondo-progresso) 100%
+    );
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  
+  .volume-slider::-moz-range-track {
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(
+      to right,
+      var(--colore-primario) 0%,
+      var(--colore-primario) var(--volume-percentage),
+      var(--sfondo-progresso) var(--volume-percentage),
+      var(--sfondo-progresso) 100%
+    );
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  
+  .volume-percentage {
+    min-width: 40px;
+    font-size: 14px;
+    color: var(--colore-testo);
+    text-align: center;
+    font-weight: 500;
+    opacity: 0.9;
+  }
+  
+  .time-display {
+    font-size: 14px;
+    display: flex;
+    gap: 4px;
+    transition: color 0.2s ease;
+  }
+  
+  .time-display:hover {
+    color: var(--colore-primario);
+  }
+  
+  /* Icone del fullscreen */
+  .normal-screen-icon,
+  .window-fullscreen-icon,
+  .browser-fullscreen-icon {
+    display: none;
+  }
+  
+  /* Modalità normale */
+  .normal-screen-icon {
+    display: block;
+  }
+  
+  /* Modalità finestra a schermo intero */
+  .window-fullscreen .window-fullscreen-icon {
+    display: block;
+  }
+  
+  .window-fullscreen .normal-screen-icon,
+  .window-fullscreen .browser-fullscreen-icon {
+    display: none;
+  }
+  
+  /* Modalità fullscreen del browser */
+  :fullscreen .browser-fullscreen-icon {
+    display: block;
+  }
+  
+  :fullscreen .normal-screen-icon,
+  :fullscreen .window-fullscreen-icon {
+    display: none;
+  }
+  
+  .pause-icon,
+  .mute-icon {
+    display: none;
+  }
+  
+  .playing .play-icon {
+    display: none;
+  }
+  
+  .playing .pause-icon {
+    display: block;
+  }
+  
+  .muted .volume-icon {
+    display: none;
+  }
+  
+  .muted .mute-icon {
+    display: block;
+  }
+  
+  .contenitore-video:fullscreen {
+    width: 100vw;
+    height: 100vh;
+  }
+  
+  .contenitore-video:fullscreen video {
+    height: 100%;
+    object-fit: contain;
+  }
+  
+  /* Menu Impostazioni - Base */
+  .menu-impostazioni {
+    position: absolute;
+    bottom: 85px;
+    right: 12px;
+    width: 300px;
+    background: rgba(28, 28, 28, 0.95);
+    border-radius: 12px;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: all 0.2s ease;
+    z-index: 1000;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  
+  .menu-impostazioni.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  
+  /* Intestazione Menu */
+  .intestazione-impostazioni {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+  }
+  
+  .titolo-impostazioni {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    color: #fff;
+  }
+  
+  /* Pulsanti Intestazione */
+  .pulsante-indietro,
+  .pulsante-chiudi {
+    background: none;
+    border: none;
+    color: #fff;
+    padding: 8px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .pulsante-indietro:hover,
+  .pulsante-chiudi:hover {
+    opacity: 1;
+  }
+  
+  .pulsante-indietro svg,
+  .pulsante-chiudi svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* Contenuto Menu */
+  .settings-content {
+    padding: 8px 0;
+  }
+  
+  .settings-content.hidden {
+    display: none;
+  }
+  
+  /* Elementi Menu */
+  .settings-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .settings-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .settings-label {
+    flex: 1;
+    font-size: 14px;
+  }
+  
+  .settings-value {
+    font-size: 14px;
+    opacity: 0.7;
+    margin-right: 8px;
+  }
+  
+  .arrow-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.5;
+  }
+  
+  /* Opzioni (Qualità, Velocità, Sottotitoli) */
+  .quality-option,
+  .speed-option,
+  .subtitles-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .quality-option:hover,
+  .speed-option:hover,
+  .subtitles-option:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .check-icon {
+    width: 18px;
+    height: 18px;
+    opacity: 0;
+    color: var(--colore-primario);
+    transition: opacity 0.2s ease;
+  }
+  
+  .selected .check-icon {
+    opacity: 1;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .menu-impostazioni {
+      bottom: 70px;
+      right: 10px;
+      width: 280px;
+    }
+
+    .settings-item {
+      padding: 14px 16px;
+    }
+
+    .settings-label,
+    .settings-value {
+      font-size: 15px;
+    }
+
+    .pulsante-indietro,
+    .pulsante-chiudi {
+      padding: 12px;
+    }
+
+    .pulsante-indietro svg,
+    .pulsante-chiudi svg {
+      width: 22px;
+      height: 22px;
+    }
+  }
+  
+  /* iPhone e schermi piccoli */
+  @media (max-width: 375px) {
+    .menu-impostazioni {
+      bottom: 65px;
+      right: 8px;
+      width: 260px;
+    }
+
+    .settings-item {
+      padding: 13px 14px;
+    }
+
+    .settings-label,
+    .settings-value {
+      font-size: 14px;
+    }
+
+    .intestazione-impostazioni {
+      padding: 14px;
+    }
+
+    .titolo-impostazioni {
+      font-size: 15px;
+    }
+  }
+  
+  /* Supporto per dispositivi touch */
+  @supports (-webkit-touch-callout: none) {
+    .menu-impostazioni {
+      transform: translateZ(0);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .settings-item,
+    .quality-option,
+    .speed-option,
+    .subtitles-option {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .pulsante-indietro,
+    .pulsante-chiudi {
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
+  
+  .cast-button {
+    position: fixed;
+    top: 32px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 99999;
+    transition: all 0.2s ease;
+    pointer-events: auto;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  
+  .cast-button svg {
+    width: 30px;
+    height: 30px;
+    stroke: white;
+    stroke-width: 2.5;
+    fill: none;
+    opacity: 1;
+  }
+  
+  .cast-button:hover {
+    background: rgba(0, 0, 0, 0.9);
+    transform: scale(1.1);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+  
+  .cast-button.connected svg {
+    fill: white;
+  }
+  
+  @media (max-width: 768px) {
+    .cast-button {
+      top: 15px;
+      right: 15px;
+      width: 40px;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .cast-button svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .cast-button:active {
+      transform: scale(0.95);
+      background: rgba(0, 0, 0, 0.9);
+    }
+  }
+  
+  .notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 1000;
+    transition: opacity 0.5s ease;
+  }
+  
+  .notification.fade-out {
+    opacity: 0;
+  }
